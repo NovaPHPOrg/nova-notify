@@ -52,7 +52,7 @@ class EmailChannel implements NotifyChannelInterface
                 $mail->Subject = $data->title;
                 
                 // 使用格式化的HTML模板
-                $mail->Body = $this->buildHtmlMessage($data, $channel->config['name'] ?? '系统通知');
+                $mail->Body = $this->buildHtmlMessage($data, config('system.name') ?? "系统通知");
                 $mail->AltBody = strip_tags($data->message) ?: '客户端不支持html显示，请更换邮件客户端。';
                 $mail->send();
         } catch (\Exception $e) {
