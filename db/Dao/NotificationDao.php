@@ -8,7 +8,6 @@ use nova\plugin\orm\object\Dao;
 
 class NotificationDao extends Dao
 {
-
     public function getNotifyStats(): array
     {
 

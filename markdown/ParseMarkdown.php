@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace nova\plugin\notify\markdown;
@@ -112,8 +113,6 @@ class ParseMarkdown
         'time',
     ];
 
-
-
     protected array $safeLinksWhitelist = [
         'http://',
         'https://',
@@ -130,8 +129,6 @@ class ParseMarkdown
         'news:',
         'steam:',
     ];
-
-
 
     protected array $markdownBlockTypes = [
         '#' => array('Header'),
@@ -159,12 +156,9 @@ class ParseMarkdown
         '~' => array('FencedCode'),
     ];
 
-
     protected array $unmarkedmarkdownBlockTypes = [
         'Code',
     ];
-
-
 
     protected array $InlineTypes = [
         '"' => array('SpecialCharacter'),
@@ -185,23 +179,18 @@ class ParseMarkdown
 
     protected string $inlineMarkerList = '!"*_&[:<>`~\\';
 
-
-
     public function __construct(
-
         protected bool $sanitize = true,
-
     ) {
         $this->breaksEnabled = '';
         $this->safeMode = $sanitize;
         $this->setBreaksEnabled = true;
 
-        if(true === $sanitize){
+        if (true === $sanitize) {
             $this->setUrlsLinked = true;
             $this->setMarkupEscaped = true;
         }
     }
-
 
     /**
      * Set Markup Contents
@@ -233,7 +222,6 @@ class ParseMarkdown
         return $markup;
     }
 
-
     # Setters
     private function setBreaksEnabled(bool $breaksEnabled): self
     {
@@ -242,14 +230,12 @@ class ParseMarkdown
         return $this;
     }
 
-
     private function setMarkupEscaped(bool $markupEscaped): self
     {
         $this->markupEscaped = $markupEscaped;
 
         return $this;
     }
-
 
     private function setUrlsLinked(bool $urlsLinked): self
     {
@@ -266,7 +252,6 @@ class ParseMarkdown
 
         return $this;
     }
-
 
     protected function lines(array $lines): ?string
     {
@@ -340,7 +325,6 @@ class ParseMarkdown
                     $blockTypes[] = $blockType;
                 }
             }
-
 
             foreach ($blockTypes as $blockType) {
                 $markdownBlock = $this->{'block' . $blockType}($Line, $CurrentmarkdownBlock);
@@ -420,7 +404,6 @@ class ParseMarkdown
     {
         return method_exists($this, 'block' . $Type . 'Complete');
     }
-
 
     protected function blockCode(array $Line, ?array $markdownBlock = null): ?array
     {
@@ -525,7 +508,6 @@ class ParseMarkdown
         return $markdownBlock;
     }
 
-
     /**
      * Fenced Codes
      *
@@ -603,7 +585,6 @@ class ParseMarkdown
 
         return $markdownBlock;
     }
-
 
     protected function blockFencedCodeComplete(array $markdownBlock): ?array
     {
@@ -759,9 +740,6 @@ class ParseMarkdown
         return $markdownBlock;
     }
 
-
-
-
     protected function blockQuote(array $Line): ?array
     {
         if (preg_match('/^>[ ]?(.*)/', $Line['text'], $matches)) {
@@ -779,8 +757,6 @@ class ParseMarkdown
 
         return null;
     }
-
-
 
     protected function blockQuoteContinue(array $Line, array $markdownBlock): ?array
     {
@@ -807,8 +783,6 @@ class ParseMarkdown
 
         return null;
     }
-
-
 
     protected function blockRule(array $Line): ?array
     {
@@ -844,8 +818,6 @@ class ParseMarkdown
 
         return null;
     }
-
-
 
     protected function blockMarkup(array $Line): ?array
     {
@@ -895,21 +867,17 @@ class ParseMarkdown
         return null;
     }
 
-
-
     protected function blockMarkupContinue(array $Line, array $markdownBlock): ?array
     {
         if (isset($markdownBlock['closed'])) {
             return null;
         }
 
-        if (preg_match('/^<' . $markdownBlock['name'] . '(?:[ ]*' . $this->regexHtmlAttribute . ')*[ ]*>/i', $Line['text'])) # open
-        {
+        if (preg_match('/^<' . $markdownBlock['name'] . '(?:[ ]*' . $this->regexHtmlAttribute . ')*[ ]*>/i', $Line['text'])) { # open
             $markdownBlock['depth']++;
         }
 
-        if (preg_match('/(.*?)<\/' . $markdownBlock['name'] . '>[ ]*$/i', $Line['text'], $matches)) # close
-        {
+        if (preg_match('/(.*?)<\/' . $markdownBlock['name'] . '>[ ]*$/i', $Line['text'], $matches)) { # close
             if ($markdownBlock['depth'] > 0) {
                 $markdownBlock['depth']--;
             } else {
@@ -927,9 +895,6 @@ class ParseMarkdown
 
         return $markdownBlock;
     }
-
-
-
 
     protected function blockReference(array $Line): ?array
     {
@@ -1129,7 +1094,7 @@ class ParseMarkdown
      * Inline markdownElement
      *
      * @param string $text
-     * @param array $nonNestables
+     * @param array  $nonNestables
      *
      */
     public function line(string $text, array $nonNestables = array())
@@ -1597,13 +1562,12 @@ class ParseMarkdown
     # Deprecated Methods
     #
 
-    function parse($text)
+    public function parse($text)
     {
         $markup = $this->markdown_text($text);
 
         return $markup;
     }
-
 
     protected function sanitisemarkdownElement(array $markdownElement)
     {
@@ -1680,6 +1644,5 @@ class ParseMarkdown
 
         return $instance;
     }
-
 
 }

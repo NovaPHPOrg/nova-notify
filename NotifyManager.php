@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace nova\plugin\notify;
 
-use app\task\NotifyTasker;
 use http\Exception\RuntimeException;
+
+use function nova\framework\config;
+
 use nova\framework\core\Context;
 use nova\framework\core\Logger;
-use nova\plugin\notify\adapter\NotifyChannelAdapter;
 use nova\plugin\notify\channels\EmailChannel;
 use nova\plugin\notify\channels\WechatWorkChannel;
-use nova\plugin\notify\db\Dao\NotifyChannelDao;
 use nova\plugin\notify\db\Dao\NotificationDao;
+use nova\plugin\notify\db\Dao\NotifyChannelDao;
 use nova\plugin\notify\db\Model\NotificationModel;
 use nova\plugin\notify\dto\NotifyDataDTO;
-use function nova\framework\config;
 
 /**
  * 通知管理器 V2
@@ -24,7 +24,6 @@ use function nova\framework\config;
  */
 class NotifyManager
 {
-
     /**
      * @var string 默认使用的通知渠道
      */
@@ -40,14 +39,12 @@ class NotifyManager
         $this->defaultChannel = config('notify.default_channel') ?? 'email';
     }
 
-
-    static function getInstance(): NotifyManager
+    public static function getInstance(): NotifyManager
     {
         return Context::instance()->getOrCreateInstance('notify', function () {
             return new NotifyManager();
         });
     }
-
 
     private array $channelMap = [
         'email' => EmailChannel::class,
@@ -67,7 +64,6 @@ class NotifyManager
         return new $channel();
     }
 
-
     /**
      * 获取默认的通知渠道
      */
@@ -79,9 +75,9 @@ class NotifyManager
     /**
      * 发送通知
      *
-     * @param NotifyDataDTO $data 标准化通知数据
-     * @param string|null $channel 通知渠道，为null时使用默认渠道
-     * @return bool 是否发送成功
+     * @param  NotifyDataDTO $data    标准化通知数据
+     * @param  string|null   $channel 通知渠道，为null时使用默认渠道
+     * @return bool          是否发送成功
      */
     public function send(NotifyDataDTO $data, ?string $channel = null): ?string
     {
@@ -125,9 +121,8 @@ class NotifyManager
         $dto->actionLeftUrl = Context::instance()->request()->getBasicAddress();
         $dto->actionLeftText = '知道了';
 
-
         $dto->actionRightUrl = Context::instance()->request()->getBasicAddress();
         $dto->actionRightText = '退下吧';
         return $this->send($dto, $channel);
     }
-} 
+}

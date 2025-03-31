@@ -11,9 +11,9 @@ interface NotifyChannelInterface
 {
     /**
      * 发送通知
-     * @param NotifyChannelModel $channel 通道配置
-     * @param NotifyDataDTO $data 通知数据
-     * @throws \RuntimeException 发送失败时抛出异常
+     * @param  NotifyChannelModel $channel 通道配置
+     * @param  NotifyDataDTO      $data    通知数据
+     * @throws \RuntimeException  发送失败时抛出异常
      */
     public function send(NotifyChannelModel $channel, NotifyDataDTO $data): void;
 }

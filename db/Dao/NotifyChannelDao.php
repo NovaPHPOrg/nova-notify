@@ -9,8 +9,6 @@ use nova\plugin\orm\object\Dao;
 
 class NotifyChannelDao extends Dao
 {
-
-
     public function onCreateTable(): void
     {
         // 创建默认的邮件通道
@@ -44,11 +42,9 @@ class NotifyChannelDao extends Dao
 
     }
 
-
-
     /**
      * 根据类型获取通知渠道
-     * @param string $type
+     * @param  string                  $type
      * @return NotifyChannelModel|null
      */
     public function getChannelByType(string $type): ?NotifyChannelModel

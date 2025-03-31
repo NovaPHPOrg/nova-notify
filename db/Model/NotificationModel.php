@@ -20,10 +20,9 @@ class NotificationModel extends Model
         parent::__construct($item, $fromDb);
     }
 
-
     public function onParseType(string $key, mixed &$val, mixed $demo): bool
     {
-        if ($key === 'data' && $this->isFromDb()){
+        if ($key === 'data' && $this->isFromDb()) {
             $val = unserialize($val);
             return true;
         }
