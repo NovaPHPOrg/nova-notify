@@ -12,15 +12,15 @@ class ParseMarkdown
     protected bool $setUrlsLinked = false;
     protected bool $setMarkupEscaped = false;
 
-    protected bool $safeMode;
+    protected bool $safeMode = false;
 
-    protected mixed $markupEscaped;
+    protected mixed $markupEscaped = false;
 
     protected const version = '1.7.4';
 
     private static array $instances = [];
 
-    protected ?array $DefinitionData;
+    protected ?array $DefinitionData = null;
 
     protected array $specialCharacters = [
         '\\',

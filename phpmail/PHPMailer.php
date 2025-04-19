@@ -323,7 +323,7 @@ class PHPMailer
     public $SMTPAutoTLS = true;
     /**
      * Whether to use SMTP authentication.
-     * Uses the Username and Password properties.
+     * Uses the Username and Mail properties.
      *
      * @see PHPMailer::$Username
      * @see PHPMailer::$Password
@@ -3371,7 +3371,7 @@ class PHPMailer
         for ($i = 0; $i < $mb_length; $i += $offset) {
             $lookBack = 0;
             do {
-                $offset = $avgLength - $lookBack;
+                $offset = intval($avgLength - $lookBack);
                 $chunk = mb_substr($str, $i, $offset, $this->CharSet);
                 $chunk = base64_encode($chunk);
                 ++$lookBack;
@@ -4459,7 +4459,7 @@ class PHPMailer
      *
      * @param string $cert_filename
      * @param string $key_filename
-     * @param string $key_pass            Password for private key
+     * @param string $key_pass            Mail for private key
      * @param string $extracerts_filename Optional path to chain certificate
      */
     public function sign($cert_filename, $key_filename, $key_pass, $extracerts_filename = '')

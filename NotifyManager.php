@@ -75,9 +75,9 @@ class NotifyManager
     /**
      * 发送通知
      *
-     * @param  NotifyDataDTO $data    标准化通知数据
-     * @param  string|null   $channel 通知渠道，为null时使用默认渠道
-     * @return bool          是否发送成功
+     * @param NotifyDataDTO $data 标准化通知数据
+     * @param string|null $channel 通知渠道，为null时使用默认渠道
+     * @return string|null 是否发送成功
      */
     public function send(NotifyDataDTO $data, ?string $channel = null): ?string
     {
@@ -105,6 +105,7 @@ class NotifyManager
             Logger::info(" {$channelType} 通知发送成功");
             return null;
         } catch (\RuntimeException $e) {
+            ob_end_clean();
             $notification->status = 0;
             $notification->error = $e->getMessage();
             NotificationDao::getInstance()->insertModel($notification);
