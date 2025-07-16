@@ -25,7 +25,7 @@
 <div id="container" class="container">
     <div class="row col-space16 p-4">
         <div class="col-xs12 title-large center-vertical mb-4">
-            <mdui-icon name="link" class="mr-2"></mdui-icon>
+            <mdui-icon name="webhook" class="mr-2"></mdui-icon>
             <span>Webhook配置</span>
         </div>
         <div class="col-xs12">
