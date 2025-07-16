@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace nova\plugin\notify;
 
 use nova\framework\core\StaticRegister;
+
 use nova\framework\event\EventManager;
 use nova\framework\exception\AppExitException;
 use nova\framework\http\Response;
@@ -95,7 +96,7 @@ class Notify extends StaticRegister
         } else {
             throw new AppExitException(Response::asJson([
                 'code' => 500,
-                'msg' => '测试通知发送失败'
+                'msg' => '测试通知发送失败: '.$notify->exception->getMessage()
             ]));
         }
     }
@@ -119,6 +120,7 @@ class Notify extends StaticRegister
             $webhookConfig->url = $data['url'] ?? $webhookConfig->url;
             $webhookConfig->auth_header = $data['auth_header'] ?? $webhookConfig->auth_header;
             $webhookConfig->timeout = (int)($data['timeout'] ?? $webhookConfig->timeout);
+
             throw new AppExitException(Response::asJson([
                 'code' => 200,
                 'msg' => 'Webhook配置保存成功'
@@ -152,7 +154,7 @@ class Notify extends StaticRegister
         } else {
             throw new AppExitException(Response::asJson([
                 'code' => 500,
-                'msg' => '测试通知发送失败'
+                'msg' => '测试通知发送失败: '.$notify->exception->getMessage()
             ]));
         }
     }

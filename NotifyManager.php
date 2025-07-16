@@ -38,6 +38,8 @@ class NotifyManager
         });
     }
 
+    public ?\Exception $exception = null;
+
     /**
      * 发送通知
      */
@@ -62,7 +64,8 @@ class NotifyManager
                 throw $e;
             }
 
-            Logger::error("通知发送失败: {$channelType} - " . $e->getMessage());
+            $this->exception = $e;
+
             return false;
         }
     }

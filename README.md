@@ -1,249 +1,210 @@
-# Nova 多渠道通知插件
+# 精简版通知模块
 
-这是一个支持多种通知渠道的 Nova 框架插件。通过此插件，您可以方便地向用户发送不同类型的通知，如邮件、微信、企业微信和微信公众号等。
+## 概述
 
-## 功能特点
-
-- 支持多种通知渠道：邮件、微信、企业微信、微信公众号等
-- 基于数据库的渠道管理，可在后台动态启用/禁用渠道
-- 通知状态跟踪和失败重试机制
-- 批量发送通知支持
-- 通知模板支持
-
-## 安装
-
-通过 Composer 安装：
-
-```bash
-composer require nova/plugin-notify
-```
+这是一个精简的通知模块，支持邮件、企业微信和Webhook通知。使用DTO提供类型安全和更好的代码可读性，同时保持简洁的设计。配置使用独立的配置类管理。
 
 ## 配置
 
-在 `config/notify.php` 中添加以下配置：
+### 通知模块配置 (NotifyConfig)
 
 ```php
+// config.php
 return [
-    // 默认通知渠道
-    'default_channel' => 'email',
-    
-    // 邮件配置（可选，优先使用数据库中的配置）
-    'email' => [
-        'host' => 'smtp.example.com',
-        'port' => 587,
-        'encryption' => 'tls',
-        'username' => 'your-email@example.com',
-        'password' => 'your-password',
-        'from' => [
-            'address' => 'noreply@example.com',
-            'name' => '通知系统'
-        ]
-    ],
-    
-    // 微信配置（可选，优先使用数据库中的配置）
-    'wechat' => [
-        'corp_id' => 'your-corp-id',
-        'corp_secret' => 'your-corp-secret',
-        'agent_id' => 'your-agent-id'
+    'notify' => [
+        'default_channel' => 'email', // 默认通知渠道: email, wechat_work, webhook
     ]
 ];
 ```
 
-## 数据库配置
+### 邮件配置 (MailConfig)
 
-通知渠道配置存储在数据库中，创建表时会自动生成默认的渠道配置。您可以在后台管理界面修改这些配置并启用/禁用相应的渠道。
-
-默认生成的渠道包括：
-- 邮件通知 (email)
-- 微信通知 (wechat)
-- 企业微信通知 (wechat_work)
-- 微信公众号通知 (wechat_gzh)
-
-## 渠道管理
-
-通过 NotifyChannelDao 可以管理通知渠道：
+复用现有的邮件模块配置：
 
 ```php
-use nova\plugin\notify\db\Dao\NotifyChannelDao;
-
-// 获取所有启用的渠道
-$activeChannels = NotifyChannelDao::getInstance()->getActiveChannels();
-
-// 切换渠道状态
-NotifyChannelDao::getInstance()->toggleChannelStatus(1, true);  // 启用ID为1的渠道
-NotifyChannelDao::getInstance()->toggleChannelStatus(2, false); // 禁用ID为2的渠道
-
-// 更新渠道配置
-$config = [
-    'smtp_host' => 'smtp.gmail.com',
-    'smtp_port' => 587,
-    // 其他配置...
+// config.php
+return [
+    'mail' => [
+        'host' => 'smtp.qq.com',
+        'port' => 465,
+        'username' => 'your-email@qq.com',
+        'password' => 'your-password',
+        'site' => '系统通知'
+    ]
 ];
-NotifyChannelDao::getInstance()->updateChannelConfig(1, $config);
 ```
 
-## 使用示例
+### 企业微信配置 (WechatConfig)
 
-### 发送单个通知
+```php
+// config.php
+return [
+    'wechat' => [
+        'corp_id' => 'your-corp-id',
+        'corp_secret' => 'your-corp-secret',
+        'agent_id' => 'your-agent-id',
+        'default_recipient' => 'user-id'
+    ]
+];
+```
+
+### Webhook配置 (WebhookConfig)
+
+```php
+// config.php
+return [
+    'webhook' => [
+        'url' => 'https://your-webhook-url.com/api/notify',
+        'auth_header' => 'Authorization: Bearer your-token', // 可选
+        'timeout' => 30 // 超时时间（秒）
+    ]
+];
+```
+
+## 使用方法
+
+### 使用DTO（推荐）
 
 ```php
 use nova\plugin\notify\NotifyManager;
+use nova\plugin\notify\dto\NotifyDataDTO;
 
-// 实例化通知管理器
-$notifyManager = new NotifyManager();
+$notify = NotifyManager::getInstance();
 
-// 发送单个通知（使用默认渠道）
-$businessId = '2024052500001';
-$data = [
-    'business_id' => $businessId,
-    'notification_type' => 'success',
-    'title' => '操作成功',
-    'content' => '您的操作已成功完成',
-    'details' => '操作详情内容...',
-    'email' => 'user@example.com',
-    'open_id' => 'ox-xxxxx', // 微信公众号OpenID
-    'user_id' => 'user123', // 企业微信用户ID
-    'url' => 'https://example.com/details/12345', // 通知跳转链接
-    'remark' => '感谢您的使用！' // 备注信息
-];
+// 创建DTO
+$dto = new NotifyDataDTO([
+    'title' => '订单通知',
+    'message' => '您有一个新订单',
+    'type' => 'success',
+    'recipient' => 'user@example.com'
+]);
 
-// 使用默认渠道发送
-$success = $notifyManager->send($businessId, null, $data);
+// 发送邮件通知
+$result = $notify->send($dto, 'email');
 
-// 使用指定渠道发送
-$success = $notifyManager->send($businessId, 'email', $data);
-$success = $notifyManager->send($businessId, 'wechat', $data);
-$success = $notifyManager->send($businessId, 'wechat_work', $data);
-$success = $notifyManager->send($businessId, 'wechat_gzh', $data);
+// 发送企业微信通知
+$result = $notify->send($dto, 'wechat_work');
+
+// 发送Webhook通知
+$result = $notify->send($dto, 'webhook');
 ```
 
-### 同时发送多个渠道通知
+### 使用数组（便捷方法）
 
 ```php
-// 同时通过多个渠道发送通知
-$channels = ['email', 'wechat', 'wechat_work', 'wechat_gzh'];
-$results = $notifyManager->sendMultiple($businessId, $channels, $data);
-
-// 检查结果
-foreach ($results as $channel => $success) {
-    echo "通过 {$channel} 发送通知: " . ($success ? '成功' : '失败') . "\n";
-}
-
-// 通过所有启用的渠道发送通知
-$results = $notifyManager->sendMultiple($businessId, [], $data);
+// 直接使用数组发送
+$result = $notify->sendFromArray([
+    'title' => '测试通知',
+    'message' => '这是一个测试',
+    'type' => 'default',
+    'recipient' => 'user@example.com'
+], 'webhook');
 ```
 
-### 不同类型的通知示例
+### 带动作按钮的通知
 
 ```php
-// 成功通知
-$successData = [
-    'notification_type' => 'success',
-    'title' => '操作成功',
-    'content' => '您的操作已成功完成',
-    'details' => '详细信息...'
-];
+$dto = new NotifyDataDTO([
+    'title' => '新订单',
+    'message' => '您有一个新订单需要处理',
+    'type' => 'success',
+    'recipient' => 'admin@example.com',
+    'actionLeftUrl' => 'https://example.com/orders/123',
+    'actionLeftText' => '查看订单',
+    'actionRightUrl' => 'https://example.com/orders/123/approve',
+    'actionRightText' => '批准订单'
+]);
 
-// 警告通知
-$warningData = [
-    'notification_type' => 'warning',
-    'title' => '系统警告',
-    'content' => '系统检测到异常行为',
-    'details' => '异常详情...'
-];
-
-// 错误通知
-$errorData = [
-    'notification_type' => 'error',
-    'title' => '错误提醒',
-    'content' => '系统发生错误',
-    'details' => '错误详情...'
-];
-
-// 自定义内容通知
-$customData = [
-    'notification_type' => 'default',
-    'title' => '自定义通知',
-    'content' => '这是一条完全自定义的通知内容'
-];
-
-$notifyManager->send($businessId, 'email', $successData);
-$notifyManager->send($businessId, 'wechat_work', $warningData);
-$notifyManager->send($businessId, 'wechat_gzh', $errorData);
-$notifyManager->send($businessId, 'wechat', $customData);
+$notify->send($dto, 'webhook');
 ```
 
-### 重试失败的通知
+### 测试通知
 
 ```php
-// 重试失败的通知
-$results = $notifyManager->retryFailedNotifications(10, 30); // 重试最多10条，30分钟前失败的通知
+// 测试邮件通知
+$notify->test('email');
+
+// 测试企业微信通知
+$notify->test('wechat_work');
+
+// 测试Webhook通知
+$notify->test('webhook');
 ```
 
-### 查询通知记录
+## 通知类型
+
+支持的通知类型：
+
+- `default` - 默认通知（蓝色）
+- `success` - 成功通知（绿色）
+- `warning` - 警告通知（橙色）
+- `error` - 错误通知（红色）
+
+## DTO字段说明
 
 ```php
-// 获取特定业务ID的通知记录
-$notifications = $notifyManager->getNotifications($businessId);
-
-// 获取失败的通知记录
-$failedNotifications = $notifyManager->getFailedNotifications(10);
-```
-
-### 注册自定义通知渠道
-
-```php
-// 注册自定义通知渠道
-$notifyManager->registerChannel('custom_channel', new YourCustomChannel());
-
-// 发送自定义渠道通知
-$notifyManager->send($businessId, 'custom_channel', $data);
-```
-
-## 扩展新的通知渠道
-
-1. 创建一个实现 `NotifyChannelInterface` 接口的类：
-
-```php
-use nova\plugin\notify\NotifyChannelInterface;
-use nova\plugin\notify\db\Model\NotifyChannelModel;
-
-class YourCustomChannel implements NotifyChannelInterface
+class NotifyDataDTO
 {
-    public function send(NotifyChannelModel $channel, array $data): void
-    {
-        // 实现您的通知发送逻辑...
-    }
+    public string $title;           // 通知标题
+    public string $message;         // 通知内容
+    public string $type = 'default'; // 通知类型
+    public ?string $recipient = null; // 收件人
+    public ?string $actionLeftUrl = null;   // 左侧按钮链接
+    public ?string $actionLeftText = null;  // 左侧按钮文本
+    public ?string $actionRightUrl = null;  // 右侧按钮链接
+    public ?string $actionRightText = null; // 右侧按钮文本
 }
 ```
 
-2. 在数据库中添加新的通知渠道配置：
+## Webhook数据格式
 
-```php
-use nova\plugin\notify\db\Model\NotifyChannelModel;
-use nova\plugin\notify\db\Dao\NotifyChannelDao;
+Webhook渠道会向指定URL发送POST请求，数据格式如下：
 
-$customChannel = new NotifyChannelModel();
-$customChannel->type = 'custom_channel';
-$customChannel->name = '自定义通知渠道';
-$customChannel->config = [
-    // 渠道配置...
-];
-$customChannel->created_at = date('Y-m-d H:i:s');
-$customChannel->status = 1; // 启用
-NotifyChannelDao::getInstance()->insertModel($customChannel);
+```json
+{
+    "title": "通知标题",
+    "message": "通知内容",
+    "type": "success",
+    "recipient": "收件人",
+    "actionLeftUrl": "左侧按钮链接",
+    "actionLeftText": "左侧按钮文本",
+    "actionRightUrl": "右侧按钮链接",
+    "actionRightText": "右侧按钮文本",
+    "timestamp": 1640995200,
+    "channel": "webhook"
+}
 ```
 
-3. 在 `NotifyManager` 类中注册新渠道的映射：
+## 配置类说明
 
-```php
-// 在 NotifyManager::registerAvailableChannels() 方法中添加映射
-$channelMap = [
-    // 已有映射...
-    'custom_channel' => YourCustomChannel::class,
-];
-```
+### NotifyConfig
+- `default_channel` - 默认通知渠道
 
-## 许可证
+### MailConfig (复用邮件模块)
+- `host` - SMTP服务器地址
+- `port` - SMTP端口
+- `username` - 邮箱用户名
+- `password` - 邮箱密码
+- `site` - 发件人名称
 
-MIT
+### WechatConfig
+- `corp_id` - 企业微信企业ID
+- `corp_secret` - 企业微信应用Secret
+- `agent_id` - 企业微信应用ID
+- `default_recipient` - 默认收件人
+
+### WebhookConfig
+- `url` - Webhook接收地址
+- `auth_header` - 认证头部（可选）
+- `timeout` - 请求超时时间（秒）
+
+## 优势
+
+1. **类型安全** - 使用DTO提供编译时类型检查
+2. **代码可读性** - 属性访问比数组键更直观
+3. **IDE支持** - 更好的自动完成和重构支持
+4. **配置分离** - 每个模块使用独立的配置类
+5. **复用现有配置** - 邮件配置复用MailConfig
+6. **灵活扩展** - 支持多种通知渠道，包括Webhook
+7. **性能更好** - 移除了数据库操作和复杂的输出缓冲
+8. **易于扩展** - 简单的接口设计，容易添加新的通知渠道
