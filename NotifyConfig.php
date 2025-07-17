@@ -19,4 +19,4 @@ class NotifyConfig extends ConfigObject
             throw new \RuntimeException('无效的默认通知渠道: ' . $this->default_channel);
         }
     }
-} 
+}
