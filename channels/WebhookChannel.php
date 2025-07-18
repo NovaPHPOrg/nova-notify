@@ -8,6 +8,7 @@ use Exception;
 use nova\framework\core\Logger;
 use nova\plugin\http\HttpClient;
 use nova\plugin\notify\dto\NotifyDataDTO;
+use nova\plugin\notify\markdown\ParseMarkdown;
 use nova\plugin\notify\NotifyChannelInterface;
 use nova\plugin\notify\WebhookConfig;
 
@@ -28,7 +29,7 @@ class WebhookChannel implements NotifyChannelInterface
             // 构建请求数据
             $requestData = [
                 'title' => $data->title,
-                'message' => $data->message,
+                'message' => (new ParseMarkdown)->parse($data->message),
                 'type' => $data->type,
                 'recipient' => $data->recipient,
                 'actionLeftUrl' => $data->actionLeftUrl,
