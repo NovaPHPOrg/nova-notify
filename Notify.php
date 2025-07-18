@@ -16,7 +16,7 @@ class Notify extends StaticRegister
     // 添加模板常量定义
     const string WECHAT_CONFIG_TPL = ROOT_PATH . DS . 'nova' . DS . 'plugin' . DS . 'notify' . DS . 'tpl' . DS . 'wechat-config';
     const string WEBHOOK_CONFIG_TPL = ROOT_PATH . DS . 'nova' . DS . 'plugin' . DS . 'notify' . DS . 'tpl' . DS . 'webhook-config';
-
+    const string CONFIG_TPL = ROOT_PATH . DS . 'nova' . DS . 'plugin' . DS . 'notify' . DS . 'tpl' . DS . 'notify';
     public static function registerInfo(): void
     {
         EventManager::addListener("route.before", function ($event, &$data) {
