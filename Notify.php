@@ -23,7 +23,7 @@ class Notify extends StaticRegister
             if (!class_exists('\nova\plugin\cookie\Session') || !class_exists('\nova\plugin\login\LoginManager')) {
                 return;
             }
-            \nova\plugin\cookie\Session::getInstance()->start();
+
             if (!\nova\plugin\login\LoginManager::getInstance()->checkLogin()) {
                 return;
             }
