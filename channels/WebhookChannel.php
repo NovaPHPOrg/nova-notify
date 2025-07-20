@@ -29,7 +29,7 @@ class WebhookChannel implements NotifyChannelInterface
             // 构建请求数据
             $requestData = [
                 'title' => $data->title,
-                'message' => (new ParseMarkdown())->parse(str_replace("\n", "<br>", $data->message)),
+                'message' => (new ParseMarkdown())->parse($data->message),
                 'type' => $data->type,
                 'recipient' => $data->recipient,
                 'actionLeftUrl' => $data->actionLeftUrl,
