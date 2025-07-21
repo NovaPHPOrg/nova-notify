@@ -48,6 +48,9 @@ class Notify extends StaticRegister
     {
         // 添加路由前事件监听器
         EventManager::addListener("route.before", function ($event, &$data) {
+            if (!str_starts_with($data, '/notify')) {
+                return;
+            }
             // 检查必要的依赖类是否存在
             if (!class_exists('\nova\plugin\cookie\Session') || !class_exists('\nova\plugin\login\LoginManager')) {
                 return;
