@@ -56,12 +56,6 @@ class Notify extends StaticRegister
                 return;
             }
 
-            // 处理企业微信相关路由
-            if ($data == "/notify/wechat/config") {
-                Notify::handleWechatConfig();
-            } elseif ($data == "/notify/wechat/test") {
-                Notify::handleWechatTest();
-            }
             // 处理Webhook相关路由
             elseif ($data == "/notify/webhook/config") {
                 Notify::handleWebhookConfig();
@@ -69,83 +63,6 @@ class Notify extends StaticRegister
                 Notify::handleWebhookTest();
             }
         });
-    }
-
-    /**
-     * 处理企业微信配置请求
-     *
-     * GET请求：返回当前企业微信配置信息
-     * POST请求：保存企业微信配置信息
-     *
-     * @throws AppExitException 当需要返回响应时抛出
-     * @return void
-     */
-    private static function handleWechatConfig(): void
-    {
-        // 创建企业微信配置对象
-        $wechatConfig = new WechatConfig();
-
-        // GET请求：返回配置信息
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            throw new AppExitException(Response::asJson([
-                'code' => 200,
-                'data' => get_object_vars($wechatConfig),
-            ]));
-        }
-        // POST请求：保存配置信息
-        else {
-            $data = $_POST;
-            // 更新配置参数，使用POST数据或保持默认值
-            $wechatConfig->corp_id = $data['corp_id'] ?? $wechatConfig->corp_id;
-            $wechatConfig->corp_secret = $data['corp_secret'] ?? $wechatConfig->corp_secret;
-            $wechatConfig->agent_id = $data['agent_id'] ?? $wechatConfig->agent_id;
-            $wechatConfig->default_recipient = $data['default_recipient'] ?? $wechatConfig->default_recipient;
-
-            throw new AppExitException(Response::asJson([
-                'code' => 200,
-                'msg' => '企业微信配置保存成功'
-            ]));
-        }
-    }
-
-    /**
-     * 处理测试企业微信请求
-     *
-     * 发送测试通知到企业微信，验证配置是否正确
-     *
-     * @throws AppExitException 当需要返回响应时抛出
-     * @return void
-     */
-    private static function handleWechatTest(): void
-    {
-        // 获取通知管理器实例
-        $notify = NotifyManager::getInstance();
-        // 创建企业微信配置对象
-        $config = new WechatConfig();
-
-        // 创建测试通知数据
-        $dto = new NotifyDataDTO([
-            'title' => '企业微信测试',
-            'message' => '这是一条测试通知，用于验证企业微信配置是否正确。',
-            'type' => NotifyDataDTO::TYPE_SUCCESS,
-            'recipient' => $config->default_recipient,
-        ]);
-
-        // 发送测试通知
-        $result = $notify->send($dto, 'wechat_work');
-
-        // 根据发送结果返回相应信息
-        if ($result) {
-            throw new AppExitException(Response::asJson([
-                'code' => 200,
-                'msg' => '测试通知发送成功'
-            ]));
-        } else {
-            throw new AppExitException(Response::asJson([
-                'code' => 500,
-                'msg' => '测试通知发送失败: ' . $notify->exception->getMessage()
-            ]));
-        }
     }
 
     /**
