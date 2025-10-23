@@ -26,27 +26,21 @@ class WebhookChannel implements NotifyChannelInterface
         }
 
         try {
-            // 构建请求数据
-            $requestData = [
-                'title' => $data->title,
-                'message' => (new ParseMarkdown())->parse($data->message),
-                'type' => $data->type,
-                'recipient' => $data->recipient,
-                'actionLeftUrl' => $data->actionLeftUrl,
-                'actionLeftText' => $data->actionLeftText,
-                'actionRightUrl' => $data->actionRightUrl,
-                'actionRightText' => $data->actionRightText,
-                'timestamp' => time(),
-                'channel' => 'webhook'
-            ];
 
-            $headers = [];
+            $headers = [
+                'Title' => urlencode($data->title),
+                'Type' => $data->type,
+                'Action-Left-Url' => urlencode($data->actionLeftUrl),
+                'Action-Left-Text' => urlencode($data->actionLeftText),
+                'Action-Right-Url' => urlencode($data->actionRightUrl),
+                'Action-Right-Text' => urlencode($data->actionRightText),
+            ];
             if (!empty($webhookConfig->auth_header)) {
                 $headers[] = $webhookConfig->auth_header;
             }
 
             // 发送请求
-            $response = $this->sendRequest($webhookConfig->url, $requestData, $headers, $webhookConfig->timeout);
+            $response = $this->sendRequest($webhookConfig->url, (new ParseMarkdown())->parse($data->message), $headers);
 
             if ($response['http_code'] >= 400) {
                 throw new \RuntimeException('Webhook请求失败: HTTP ' . $response['http_code'] . ' - ' . $response['body']);
@@ -69,10 +63,10 @@ class WebhookChannel implements NotifyChannelInterface
     /**
      * 发送HTTP请求
      */
-    private function sendRequest(string $url, array $data, array $headers, int $timeout): array
+    private function sendRequest(string $url, string $data, array $headers): array
     {
         $http  = HttpClient::init();
-        $response = $http->setHeaders($headers)->post($data, "form")->send($url);
+        $response = $http->setHeaders($headers)->post($data, "raw")->send($url);
 
         if ($response->getHttpCode() >= 400) {
             throw new \RuntimeException('Webhook请求失败');
