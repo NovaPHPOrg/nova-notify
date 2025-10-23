@@ -15,7 +15,7 @@ class NotifyConfig extends ConfigObject
      */
     public function onValidate(): void
     {
-        if (!in_array($this->default_channel, ['email', 'wechat_work', 'webhook'])) {
+        if (!in_array($this->default_channel, ['email', 'webhook'])) {
             throw new \RuntimeException('无效的默认通知渠道: ' . $this->default_channel);
         }
     }

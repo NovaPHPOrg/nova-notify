@@ -10,7 +10,6 @@ use nova\framework\exception\AppExitException;
 use nova\plugin\mail\MailConfig;
 use nova\plugin\notify\channels\EmailChannel;
 use nova\plugin\notify\channels\WebhookChannel;
-use nova\plugin\notify\channels\WechatWorkChannel;
 use nova\plugin\notify\dto\NotifyDataDTO;
 
 /**
@@ -50,7 +49,6 @@ class NotifyManager
         $this->notifyConfig =  new NotifyConfig();
         $this->channelMap = [
             'email' => EmailChannel::class,
-            'wechat_work' => WechatWorkChannel::class,
             'webhook' => WebhookChannel::class,
         ];
     }
@@ -140,7 +138,6 @@ class NotifyManager
     {
         $recipient = match ($channel) {
             'email' => (new MailConfig())->defaultRecipient,
-            'wechat_work' => (new WechatConfig())->default_recipient,
             'webhook' => 'test-recipient',
             default => ''
         };

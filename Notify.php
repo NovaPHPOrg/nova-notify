@@ -22,11 +22,6 @@ use nova\plugin\notify\dto\NotifyDataDTO;
 class Notify extends StaticRegister
 {
     /**
-     * 企业微信配置模板路径常量
-     */
-    const string WECHAT_CONFIG_TPL = ROOT_PATH . DS . 'nova' . DS . 'plugin' . DS . 'notify' . DS . 'tpl' . DS . 'wechat-config';
-
-    /**
      * Webhook配置模板路径常量
      */
     const string WEBHOOK_CONFIG_TPL = ROOT_PATH . DS . 'nova' . DS . 'plugin' . DS . 'notify' . DS . 'tpl' . DS . 'webhook-config';

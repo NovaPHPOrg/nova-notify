@@ -28,12 +28,12 @@ class WebhookChannel implements NotifyChannelInterface
         try {
 
             $headers = [
-                'Title' => urlencode($data->title),
+                'Title' => urlencode($data->title?:""),
                 'Type' => $data->type,
-                'Action-Left-Url' => urlencode($data->actionLeftUrl),
-                'Action-Left-Text' => urlencode($data->actionLeftText),
-                'Action-Right-Url' => urlencode($data->actionRightUrl),
-                'Action-Right-Text' => urlencode($data->actionRightText),
+                'Action-Left-Url' => urlencode($data->actionLeftUrl?:""),
+                'Action-Left-Text' => urlencode($data->actionLeftText?:""),
+                'Action-Right-Url' => urlencode($data->actionRightUrl?:""),
+                'Action-Right-Text' => urlencode($data->actionRightText?:""),
             ];
             if (!empty($webhookConfig->auth_header)) {
                 $headers[] = $webhookConfig->auth_header;

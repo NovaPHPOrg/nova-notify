@@ -59,7 +59,6 @@
                     <div class="default-channel-form">
                         <mdui-radio-group name="default_channel">
                             <mdui-radio value="email">邮件</mdui-radio>
-                            <mdui-radio value="wechat_work">企业微信</mdui-radio>
                             <mdui-radio value="webhook">WebHook</mdui-radio>
                         </mdui-radio-group>
                     </div>
