@@ -80,11 +80,11 @@
 
     window.pageOnLoad = function (loading) {
 
-        $.form.manage("/notify/webhook/config","#webhookForm")
+        $.form.manage("/admin/notify/api/webhook/config","#webhookForm")
         // 处理渠道状态开关变化
         $("#testWebhook").on("click", function() {
             $('#container').showLoading('测试中');
-            $.request.postForm("/notify/webhook/test", {
+            $.request.postForm("/admin/notify/api/webhook/test", {
 
             },function (data) {
                 $('#container').closeLoading();

@@ -109,7 +109,7 @@
 
     window.pageOnLoad = function (loading) {
         // 使用 $.form.manage 管理通知配置表单
-        $.form.manage("/notify/config", "#notify-config-form");
+        $.form.manage("/admin/notify/api/config", "#notify-config-form");
 
         window.pageOnUnLoad = function () {
             // 页面卸载时的清理工作

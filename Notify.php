@@ -43,7 +43,7 @@ class Notify extends StaticRegister
     {
         // 添加路由前事件监听器
         EventManager::addListener("route.before", function ($event, &$data) {
-            if (!str_starts_with($data, '/notify')) {
+            if (!str_starts_with($data, '/admin/notify')) {
                 return;
             }
             // 检查必要的依赖类是否存在
@@ -57,9 +57,9 @@ class Notify extends StaticRegister
             }
 
             // 处理Webhook相关路由
-            elseif ($data == "/notify/webhook/config") {
+            elseif ($data == "/admin/notify/api/webhook/config") {
                 Notify::handleWebhookConfig();
-            } elseif ($data == "/notify/webhook/test") {
+            } elseif ($data == "/admin/notify/api/webhook/test") {
                 Notify::handleWebhookTest();
             }
         });
