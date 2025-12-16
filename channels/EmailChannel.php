@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace nova\plugin\notify\channels;
 
 use nova\plugin\mail\Mail;
+use nova\plugin\mail\MailConfig;
 use nova\plugin\mail\MailException;
 use nova\plugin\mail\MailTpl;
 use nova\plugin\notify\dto\NotifyDataDTO;
+use nova\plugin\notify\markdown\ParseMarkdown;
 use nova\plugin\notify\NotifyChannelInterface;
 
 class EmailChannel implements NotifyChannelInterface
@@ -18,10 +20,6 @@ class EmailChannel implements NotifyChannelInterface
     {
         try {
             // 确定收件人
-            $recipient = $data->recipient;
-            if (empty($recipient)) {
-                throw new \RuntimeException('收件人未设置');
-            }
 
             // 使用MailTpl构建邮件内容
             $mailTpl = new MailTpl();
@@ -30,6 +28,8 @@ class EmailChannel implements NotifyChannelInterface
 
             $htmlBody = $mailTpl->notice($logo, $content);
 
+            $mailConfig = new MailConfig();
+            $recipient = $data->recipient ?: $mailConfig->defaultRecipient;
             // 使用Mail::send发送邮件
             Mail::send($recipient, '', $data->title, $htmlBody);
 
@@ -43,6 +43,11 @@ class EmailChannel implements NotifyChannelInterface
      */
     private function getSystemLogo(): string
     {
+        $icon = ROOT_PATH.'/app/static/icons/apple-touch-icon.png';
+        if (file_exists($icon)) {
+            return "data:image/png;base64," . base64_encode(file_get_contents($icon));
+        }
+
         // 生成系统邮件图标的SVG
         $iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -71,7 +76,7 @@ class EmailChannel implements NotifyChannelInterface
 
         // 添加消息内容
         $content .= '<div style="line-height: 1.6; color: #333;">';
-        $content .= $data->message;
+        $content .= (new ParseMarkdown())->parse($data->message);
         $content .= '</div>';
 
         // 添加动作按钮

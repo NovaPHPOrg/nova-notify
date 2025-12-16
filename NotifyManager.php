@@ -112,21 +112,6 @@ class NotifyManager
     }
 
     /**
-     * 从数组发送通知（便捷方法）
-     *
-     * 将数组数据转换为 NotifyDataDTO 对象后发送通知
-     *
-     * @param  array       $data    通知数据数组，包含 title、message、type、recipient 等字段
-     * @param  string|null $channel 通知渠道类型
-     * @return bool        发送是否成功
-     */
-    public function sendFromArray(array $data, ?string $channel = null): bool
-    {
-        $dto = NotifyDataDTO::fromArray($data);
-        return $this->send($dto, $channel);
-    }
-
-    /**
      * 发送测试通知
      *
      * 向指定渠道发送测试通知，用于验证渠道配置是否正确
@@ -152,23 +137,4 @@ class NotifyManager
         return $this->send($dto, $channel);
     }
 
-    /**
-     * 获取可用的通知渠道列表
-     *
-     * @return array<string> 可用的通知渠道类型数组
-     */
-    public function getAvailableChannels(): array
-    {
-        return array_keys($this->channelMap);
-    }
-
-    /**
-     * 获取通知配置实例
-     *
-     * @return NotifyConfig 通知配置对象
-     */
-    public function getConfig(): NotifyConfig
-    {
-        return $this->notifyConfig;
-    }
 }
