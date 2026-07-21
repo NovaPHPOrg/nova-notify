@@ -20,13 +20,13 @@ class WebhookConfig extends ConfigObject
         if (empty($this->url)) {
             throw new \RuntimeException('Webhook URL不能为空');
         }
-        
+
         if (!filter_var($this->url, FILTER_VALIDATE_URL)) {
             throw new \RuntimeException('Webhook URL格式错误');
         }
-        
+
         if ($this->timeout < 1 || $this->timeout > 300) {
             throw new \RuntimeException('Webhook超时时间必须在1-300秒之间');
         }
     }
-} 
+}
