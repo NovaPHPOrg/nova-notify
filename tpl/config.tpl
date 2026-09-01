@@ -40,6 +40,7 @@
                         >
                             <mdui-menu-item value="email">邮件</mdui-menu-item>
                             <mdui-menu-item value="webhook">Webhook</mdui-menu-item>
+                            <mdui-menu-item value="feishu">飞书</mdui-menu-item>
                         </mdui-select>
                     </div>
 

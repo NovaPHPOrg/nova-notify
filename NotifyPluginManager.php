@@ -27,6 +27,8 @@ class NotifyPluginManager extends StaticRegister
         $this->getOrPost('/notify/api/config', $this->map('config', 'config'));
         $this->getOrPost('/notify/api/webhook', $this->map('webhook', 'config'));
         $this->post('/notify/api/webhook/test', $this->map('webhook', 'test'));
+        $this->getOrPost('/notify/api/feishu', $this->map('feishu', 'config'));
+        $this->post('/notify/api/feishu/test', $this->map('feishu', 'test'));
     }
 
     public static function registerInfo(): void
@@ -34,6 +36,7 @@ class NotifyPluginManager extends StaticRegister
         Permission::getInstance()->registerPermissions('通知设置', 'notify_manage', [
             'GET /notify/config',
             'GET /notify/webhook',
+            'GET /notify/feishu',
             'ANY /notify/api*',
         ]);
 

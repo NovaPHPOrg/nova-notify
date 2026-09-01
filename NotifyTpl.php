@@ -7,12 +7,10 @@ namespace nova\plugin\notify;
 use nova\framework\core\Instance;
 use nova\framework\http\Request;
 use nova\framework\http\Response;
-
-use function nova\framework\route;
-
 use nova\framework\route\Route;
 use nova\plugin\login\AdminPageInterface;
 use nova\plugin\tpl\ViewResponse;
+use function nova\framework\route;
 
 /**
  * 通知设置后台页面（menu / 路由 / tpl）。
@@ -24,7 +22,8 @@ class NotifyTpl extends Instance implements AdminPageInterface
         $default = route($model, $controller, 'init');
         Route::getInstance()
             ->get('/notify/config', $default)
-            ->get('/notify/webhook', $default);
+            ->get('/notify/webhook', $default)
+            ->get('/notify/feishu', $default);
     }
 
     public function route(ViewResponse $view, Request $request): ?Response
@@ -34,6 +33,7 @@ class NotifyTpl extends Instance implements AdminPageInterface
                 'notices' => [],
             ]),
             '/notify/webhook' => $view->asTpl(ROOT_PATH . DS . 'nova/plugin/notify/tpl/webhook'),
+            '/notify/feishu' => $view->asTpl(ROOT_PATH . DS . 'nova/plugin/notify/tpl/feishu'),
             default => null,
         };
     }
@@ -55,6 +55,12 @@ class NotifyTpl extends Instance implements AdminPageInterface
                     'title' => 'Webhook配置',
                     'icon' => 'webhook',
                     'url' => '/notify/webhook',
+                    'pjax' => true,
+                ],
+                [
+                    'title' => '飞书配置',
+                    'icon' => 'chat',
+                    'url' => '/notify/feishu',
                     'pjax' => true,
                 ],
             ],

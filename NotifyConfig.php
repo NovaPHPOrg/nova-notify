@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace nova\plugin\notify;
 
 use nova\framework\core\ConfigObject;
+use RuntimeException;
 
 class NotifyConfig extends ConfigObject
 {
@@ -15,8 +16,8 @@ class NotifyConfig extends ConfigObject
      */
     public function onValidate(): void
     {
-        if (!in_array($this->default_channel, ['email', 'webhook'])) {
-            throw new \RuntimeException('无效的默认通知渠道: ' . $this->default_channel);
+        if (!in_array($this->default_channel, NotifyManager::CHANNELS, true)) {
+            throw new RuntimeException('无效的默认通知渠道: ' . $this->default_channel);
         }
     }
 }
