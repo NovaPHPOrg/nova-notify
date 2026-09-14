@@ -11,6 +11,7 @@ use nova\plugin\notify\dto\NotifyDataDTO;
 use nova\plugin\notify\markdown\ParseMarkdown;
 use nova\plugin\notify\NotifyChannelInterface;
 use nova\plugin\notify\WebhookConfig;
+use RuntimeException;
 
 class WebhookChannel implements NotifyChannelInterface
 {
@@ -22,7 +23,7 @@ class WebhookChannel implements NotifyChannelInterface
         $webhookConfig = new WebhookConfig();
 
         if (empty($webhookConfig->url)) {
-            throw new \RuntimeException('Webhook URL未设置');
+            throw new RuntimeException('Webhook URL未设置');
         }
 
         try {
@@ -43,7 +44,7 @@ class WebhookChannel implements NotifyChannelInterface
             $response = $this->sendRequest($webhookConfig->url, (new ParseMarkdown())->parse($data->message), $headers);
 
             if ($response['http_code'] >= 400) {
-                throw new \RuntimeException('Webhook请求失败: HTTP ' . $response['http_code'] . ' - ' . $response['body']);
+                throw new RuntimeException('Webhook请求失败: HTTP ' . $response['http_code'] . ' - ' . $response['body']);
             }
 
             Logger::info('Webhook通知发送成功', [
@@ -69,7 +70,7 @@ class WebhookChannel implements NotifyChannelInterface
         $response = $http->setHeaders($headers)->post($data, "raw")->send($url);
 
         if ($response->getHttpCode() >= 400) {
-            throw new \RuntimeException('Webhook请求失败');
+            throw new RuntimeException('Webhook请求失败');
         }
 
         return [

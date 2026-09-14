@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace nova\plugin\notify\channels;
 
+use Exception;
 use nova\plugin\mail\Mail;
 use nova\plugin\mail\MailConfig;
 use nova\plugin\mail\MailException;
@@ -11,6 +12,7 @@ use nova\plugin\mail\MailTpl;
 use nova\plugin\notify\dto\NotifyDataDTO;
 use nova\plugin\notify\markdown\ParseMarkdown;
 use nova\plugin\notify\NotifyChannelInterface;
+use RuntimeException;
 
 class EmailChannel implements NotifyChannelInterface
 {
@@ -33,8 +35,8 @@ class EmailChannel implements NotifyChannelInterface
             // 使用Mail::send发送邮件
             Mail::send($recipient, '', $data->title, $htmlBody);
 
-        } catch (MailException|\Exception $e) {
-            throw new \RuntimeException('邮件发送失败：' . $e->getMessage());
+        } catch (MailException|Exception $e) {
+            throw new RuntimeException('邮件发送失败：' . $e->getMessage());
         }
     }
 
