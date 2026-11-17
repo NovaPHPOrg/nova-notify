@@ -43,7 +43,7 @@ class WebhookChannel implements NotifyChannelInterface
             // 发送请求
             $response = $this->sendRequest($webhookConfig->url, (new ParseMarkdown())->parse($data->message), $headers);
 
-            if ($response['http_code'] >= 400) {
+            if ($response['http_code'] === 0 || $response['http_code'] >= 400) {
                 throw new RuntimeException('Webhook请求失败: HTTP ' . $response['http_code'] . ' - ' . $response['body']);
             }
 
@@ -68,10 +68,6 @@ class WebhookChannel implements NotifyChannelInterface
     {
         $http  = HttpClient::init();
         $response = $http->setHeaders($headers)->post($data, "raw")->send($url);
-
-        if ($response->getHttpCode() >= 400) {
-            throw new RuntimeException('Webhook请求失败');
-        }
 
         return [
             'http_code' => $response->getHttpCode(),
